@@ -3,6 +3,8 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { ChangeEvent, useState } from "react";
 import { Id } from "../convex/_generated/dataModel";
+import Table from "./components/ui/table/table.tsx";
+import { Button, Chip, Stack } from "@mui/material";
 
 function App() {
   const messages = useQuery(api.messages.get);
@@ -31,24 +33,33 @@ function App() {
     }
   };
 
-  if (!messages) return <div>loading...</div>;
+  const [chips, setChips] = useState([
+    { id: "1", label: "first chip" },
+    { id: "2", label: "second chip" },
+    { id: "3", label: "third chip" },
+  ]);
 
+  const deleteChip = (id: string) => {
+    setChips(chips.filter((chip) => chip.id !== id));
+  };
+
+  if (!messages) return <div>loading...</div>;
   return (
     <>
-      <div>
-        {messages?.map((m) => (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div>
-              message: <b>{m.messageText}</b>
-            </div>
-            <button onClick={() => removeMessage(m._id)}>x</button>
-          </div>
+      <Table />
+      <Button size={"small"} variant={"contained"}>
+        small button
+      </Button>
+      <Stack direction="row" spacing={1}>
+        {chips.map((chip) => (
+          <Chip
+            size={"small"}
+            key={chip.id}
+            label={chip.label}
+            onDelete={() => deleteChip(chip.id)}
+          />
         ))}
-      </div>
-      <input type="text" value={message} onChange={changeMessage} />
-      <button disabled={!message} onClick={sendMessage}>
-        send
-      </button>
+      </Stack>
     </>
   );
 }
